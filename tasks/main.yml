@@ -1,0 +1,29 @@
+---
+# tasks file for ansible-role-keepalived
+- name: "Include {{ ansible_distribution }} variables"
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+
+- name: 'Install packages'
+  package:
+    name: "{{ item }}"
+    state: installed
+  with_items: "{{ keepalived_packages }}"
+
+- name: 'Set configuration'
+  template:
+    src: "{{ keepalived_conf_template }}"
+    dest: "{{ keepalived_conf_path }}"
+    owner: root
+    group: root
+    mode:  0644
+  notify: reload keepalived
+
+- name: 'Start service'
+  service:
+    name: "{{ keepalived_service_name }}"
+    state: started
+    enabled: true
+...
