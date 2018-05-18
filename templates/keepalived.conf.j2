@@ -8,7 +8,7 @@ global_defs {
    smtp_connect_timeout {{ keepalived_global_defs_smtp_connect_timeout }}
 }
 vrrp_script check_haproxy {
-  script "killall -0 haproxy"
+  script "pidof haproxy"
   interval 2
   fall 3
   rise 2
