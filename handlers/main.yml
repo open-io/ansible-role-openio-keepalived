@@ -5,3 +5,4 @@
   service:
     name: "{{ keepalived_service_name }}"
     state: reloaded
+  when: not keepalived_provision_only
