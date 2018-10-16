@@ -25,3 +25,5 @@ keepalived_vrrp_instances:
       - check_haproxy
     track_interface:
       - "{{ ansible_default_ipv4.interface }}"
+
+keepalived_provision_only: false
