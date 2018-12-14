@@ -1,0 +1,5 @@
+---
+- src: https://github.com/open-io/ansible-role-openio-haproxy
+  version: master
+  name: haproxy
+...
