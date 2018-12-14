@@ -22,7 +22,7 @@
     dest: "{{ keepalived_conf_path }}"
     owner: root
     group: root
-    mode:  0644
+    mode: 0644
   notify: reload keepalived
 
 - name: 'Start service'

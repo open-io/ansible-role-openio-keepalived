@@ -1,6 +1,7 @@
+---
 keepalived_packages:
   - keepalived
   - sysvinit-tools
 
 keepalived_service_name: keepalived
-
+...
