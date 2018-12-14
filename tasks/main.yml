@@ -9,7 +9,7 @@
 - name: 'Install packages'
   package:
     name: "{{ item }}"
-    state: installed
+    state: present
   with_items: "{{ keepalived_packages }}"
   register: install_packages
   until: install_packages is success
