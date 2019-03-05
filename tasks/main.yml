@@ -1,34 +1,34 @@
 ---
 # tasks file for ansible-role-keepalived
-- name: "Include {{ ansible_distribution }} variables"
+- name: Load OS specific variables
   include_vars: "{{ item }}"
   with_first_found:
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
 
-- name: 'Install packages'
+- name: Install packages
   package:
-    name: "{{ item }}"
+    name: "{{ keepalived_packages }}"
     state: present
-  with_items: "{{ keepalived_packages }}"
-  register: install_packages
-  until: install_packages is success
-  retries: 5
-  delay: 2
 
-- name: 'Set configuration'
-  template:
-    src: "{{ keepalived_conf_template }}"
-    dest: "{{ keepalived_conf_path }}"
-    owner: root
-    group: root
-    mode: 0644
-  notify: reload keepalived
+- name: Allow binding non-local IPs to the hosts
+  sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: 1
+    ignoreerrors: yes
 
-- name: 'Start service'
+- name: Start and enable keepalived
   service:
     name: "{{ keepalived_service_name }}"
     state: started
     enabled: true
-  when: not keepalived_provision_only
+
+- name: Configure keepalived
+  template:
+    src: keepalived.conf.j2
+    dest: "{{ keepalived_conf_path }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: Reload keepalived
 ...

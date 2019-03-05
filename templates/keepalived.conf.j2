@@ -1,4 +1,5 @@
 ! Configuration File for keepalived
+
 global_defs {
    notification_email {
      {{ keepalived_global_defs_notification_email }}
@@ -6,31 +7,33 @@ global_defs {
    notification_email_from {{ keepalived_global_defs_notification_email_from }}
    smtp_server {{ keepalived_global_defs_smtp_server }}
    smtp_connect_timeout {{ keepalived_global_defs_smtp_connect_timeout }}
-}
-vrrp_script check_haproxy {
-  script "pgrep haproxy"
-  interval 2
-  fall 3
-  rise 2
+   enable_script_security
 }
 
-{% for vrrpiname, vrrpiopts in keepalived_vrrp_instances.iteritems() %}
-vrrp_instance {{ vrrpiname }} {
-  {% for key, value in vrrpiopts.iteritems() -%}
-  {{ key }}
-    {%- if value is string %} {{ value }}
-    {%- elif value is mapping %} {
-      {% for vk,vv in value.iteritems() -%}
-  {{ vk }} {{ vv }}
-      {% endfor %}
+vrrp_script {{ keepalived_track_script }} {
+  script "/bin/killall -0 haproxy"
+  interval 2  # check every 2 seconds
+  fall 3  # require 3 failures for KO
+  rise 2  # require 2 successes for OK
 }
-    {%- elif value is sequence %} {
-      {% for v in value -%}
-  {{ v }}
-      {% endfor %}
-  }
-    {%- endif %}
 
-  {% endfor -%}
+{% for name, instance in keepalived_vrrp_instances.items() %}
+vrrp_instance {{ name }} {
+    {% for key, value in instance.items() -%}
+    {{ key }}
+        {%- if value is string %} {{ value }}
+        {%- elif value is mapping %} {
+        {% for vk, vv in value.items() -%}
+        {{ vk }} {{ vv }}
+        {% endfor %}
+}
+        {%- elif value is sequence %} {
+        {% for v in value -%}
+        {{ v }}
+        {% endfor %}
+}
+        {%- endif %}
+
+    {% endfor -%}
 }
 {% endfor %}
