@@ -7,25 +7,25 @@ keepalived_global_defs_notification_email: support@openio.io
 keepalived_global_defs_notification_email_from: "{{ inventory_hostname }}@openio.io"
 keepalived_global_defs_smtp_server: 127.0.0.1
 keepalived_global_defs_smtp_connect_timeout: 30
-keepalived_track_script: check_haproxy
-keepalived_auth_type: PASS
 
 keepalived_vrrp_instances:
   VI_01:
     state: "{{ instance_state|default('BACKUP') }}"
-    interface: "{{ instance_interface }}"
+    interface: "{{ instance_interface|default(ansible_default_ipv4.address) }}"
     virtual_router_id: "{{ instance_vrid|default('51') }}"
     priority: "{{ instance_priority|default('100') }}"
     advert_int: "{{ instance_advert_int|default('1') }}"
     authentication:
-      auth_type: "{{ keepalived_auth_type }}"
-      auth_pass: "{{ instance_pwd }}"
+      auth_type: "{{ keepalived_auth_type|default('PASS') }}"
+      auth_pass: "{{ instance_password }}"
     virtual_ipaddress:
-      - "{{ instance_vip }} dev {{ instance_interface }}"
+      - "{{ instance_vip|default('172.17.1.2') }} dev {{ instance_interface|default(ansible_default_ipv4.address) }}"
     track_script:
-      - "{{ keepalived_track_script }}"
+      - "{{ keepalived_track_script|default('check_haproxy') }}"
     track_interface:
-      - "{{ instance_interface }}"
+      - "{{ instance_interface|default(ansible_default_ipv4.address) }}"
     unicast_src_ip: "{{ instance_unicast_src_ip }}"
     unicast_peer: "{{ instance_unicast_peer_ips }}"
+
+keepalived_provision_only: false
 ...

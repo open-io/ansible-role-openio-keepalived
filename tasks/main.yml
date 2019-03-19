@@ -10,18 +10,16 @@
   package:
     name: "{{ keepalived_packages }}"
     state: present
+  register: install_packages
+  until: install_packages is success
+  retries: 5
+  delay: 2
 
 - name: Allow binding non-local IPs to the hosts
   sysctl:
     name: net.ipv4.ip_nonlocal_bind
     value: 1
     ignoreerrors: yes
-
-- name: Start and enable keepalived
-  service:
-    name: "{{ keepalived_service_name }}"
-    state: started
-    enabled: true
 
 - name: Configure keepalived
   template:
@@ -31,4 +29,11 @@
     group: root
     mode: 0644
   notify: Reload keepalived
+
+- name: Start and enable keepalived
+  service:
+    name: "{{ keepalived_service_name }}"
+    state: started
+    enabled: true
+  when: not keepalived_provision_only
 ...

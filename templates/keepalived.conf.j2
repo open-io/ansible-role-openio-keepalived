@@ -10,7 +10,7 @@ global_defs {
    enable_script_security
 }
 
-vrrp_script {{ keepalived_track_script }} {
+vrrp_script {{ keepalived_track_script|default('check_haproxy') }} {
   script "/bin/killall -0 haproxy"
   interval 2  # check every 2 seconds
   fall 3  # require 3 failures for KO
