@@ -1,9 +1,0 @@
----
-# handlers file for ansible-role-openio-keepalived
-
-- name: reload keepalived
-  service:
-    name: "{{ keepalived_service_name }}"
-    state: reloaded
-  when: not keepalived_provision_only
-...
