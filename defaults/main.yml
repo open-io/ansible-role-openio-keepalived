@@ -21,7 +21,7 @@ keepalived_vrrp_instances:
     authentication:
       auth_type: PASS
       auth_pass: "{{ openio_keepalived_password | d('KEEP_PASS') }}"
-    unicast_peer: "{{ groups[keepalived_inventory_groupname] | map('extract', hostvars, ['openio_bind_address']) | list | d([]) }}"
+    unicast_peer: "{{ groups[keepalived_inventory_groupname] | map('extract', hostvars, ['openio_bind_address']) | difference([hostvars[inventory_hostname]['openio_bind_address']]) | list | d([]) }}"
     virtual_ipaddress:
       - "{{ openio_bind_virtual_address }}/{{ openio_bind_virtual_address_mask }} dev {{ openio_bind_interface }} label {{ openio_bind_interface }}:1"
     track_script:
