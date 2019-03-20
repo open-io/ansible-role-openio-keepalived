@@ -23,12 +23,14 @@
     owner: root
     group: root
     mode: 0644
-  notify: reload keepalived
+  register: set_keepalived_config
 
-- name: 'Start service'
+- name: 'Start service or reload changed config'
   service:
     name: "{{ keepalived_service_name }}"
-    state: started
+    state: reloaded
     enabled: true
-  when: not keepalived_provision_only
+  when:
+    - not keepalived_provision_only
+    - set_keepalived_config is changed
 ...
