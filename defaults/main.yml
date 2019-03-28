@@ -1,6 +1,8 @@
 ---
 # defaults file for ansible-role-openio-keepalived
 
+keepalived_inventory_groupname: keepalived
+
 keepalived_conf_template: keepalived.conf.j2
 keepalived_conf_path: /etc/keepalived/keepalived.conf
 
@@ -11,20 +13,20 @@ keepalived_global_defs_smtp_connect_timeout: 30
 
 keepalived_vrrp_instances:
   VI_01:
-    state: MASTER
-    interface: "{{ ansible_default_ipv4.interface }}"
-    virtual_router_id: '51'
-    priority: '100'
-    advert_int: '1'
+    state: "{{ (groups[keepalived_inventory_groupname][0] == inventory_hostname) | ternary('MASTER', 'BACKUP')}}"
+    interface: "{{ openio_bind_interface | d(ansible_default_ipv4.alias) }}"
+    virtual_router_id: "{{ openio_vrrp_id | d('57') }}"
+    priority: "{{ 150 if groups[keepalived_inventory_groupname][0] == inventory_hostname else 150 - groups[keepalived_inventory_groupname].index(inventory_hostname) }}"
+    advert_int: "1"
     authentication:
       auth_type: PASS
-      auth_pass: AUTH_PASS
+      auth_pass: "{{ openio_keepalived_password | d('KEEP_PASS') }}"
+    unicast_peer: "{{ groups[keepalived_inventory_groupname] | map('extract', hostvars, ['openio_bind_address']) | list | d([]) }}"
     virtual_ipaddress:
-      - 172.17.1.2
+      - "{{ openio_bind_virtual_address }}/{{ openio_bind_virtual_address_mask }} dev {{ openio_bind_interface }} label {{ openio_bind_interface }}:1"
     track_script:
       - check_haproxy
     track_interface:
-      - "{{ ansible_default_ipv4.interface }}"
-
+      - "{{ openio_bind_interface }}"
 keepalived_provision_only: false
 ...

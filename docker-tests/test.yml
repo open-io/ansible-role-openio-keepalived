@@ -1,0 +1,27 @@
+---
+# Test playbook for Ansible role cdelgehier.openio-repository
+
+- hosts: all
+  gather_facts: true
+  become: true
+
+  roles:
+    - role: role_under_test
+      keepalived_vrrp_instances:
+        VI_01:
+          state: MASTER
+          interface: "{{ ansible_default_ipv4.interface }}"
+          virtual_router_id: "42"
+          priority: "100"
+          advert_int: "1"
+          authentication:
+            auth_type: PASS
+            auth_pass: TRAVISPW
+          unicast_peer:
+            - "{{ ansible_default_ipv4.address }}"
+          virtual_ipaddress:
+            - "172.17.0.101/16 dev {{ ansible_default_ipv4.interface }} label {{ ansible_default_ipv4.interface }}:10"
+          track_script: []
+          track_interface:
+            - "{{ ansible_default_ipv4.interface }}"
+...
