@@ -16,14 +16,17 @@ keepalived_vrrp_instances:
     state: "{{ (groups[keepalived_inventory_groupname][0] == inventory_hostname) | ternary('MASTER', 'BACKUP')}}"
     interface: "{{ openio_bind_interface | d(ansible_default_ipv4.alias) }}"
     virtual_router_id: "{{ openio_vrrp_id | d('57') }}"
-    priority: "{{ 150 if groups[keepalived_inventory_groupname][0] == inventory_hostname else 150 - groups[keepalived_inventory_groupname].index(inventory_hostname) }}"
+    priority: "{{ 150 if groups[keepalived_inventory_groupname][0] == inventory_hostname \
+      else 150 - groups[keepalived_inventory_groupname].index(inventory_hostname) }}"
     advert_int: "1"
     authentication:
       auth_type: PASS
       auth_pass: "{{ openio_keepalived_password | d('KEEP_PASS') }}"
-    unicast_peer: "{{ groups[keepalived_inventory_groupname] | map('extract', hostvars, ['openio_bind_address']) | list | d([]) }}"
+    unicast_peer: "{{ groups[keepalived_inventory_groupname] \
+      | map('extract', hostvars, ['openio_bind_address']) | list | d([]) }}"
     virtual_ipaddress:
-      - "{{ openio_bind_virtual_address }}/{{ openio_bind_virtual_address_mask }} dev {{ openio_bind_interface }} label {{ openio_bind_interface }}:1"
+      - "{{ openio_bind_virtual_address }}/{{ openio_bind_virtual_address_mask }} \
+          dev {{ openio_bind_interface }} label {{ openio_bind_interface }}:1"
     track_script:
       - check_haproxy
     track_interface:
