@@ -33,10 +33,9 @@
 - name: 'Start service or reload changed config'
   service:
     name: "{{ keepalived_service_name }}"
-    state: reloaded
+    state: "{{ verb }}"
     enabled: true
-  when:
-    - not keepalived_provision_only
-    - set_keepalived_config is changed
   tags: configure
+  vars:
+    verb: "{{ 'reloaded' if not keepalived_provision_only and set_keepalived_config is changed else 'started' }}"
 ...
