@@ -1,5 +1,5 @@
 ---
 - src: https://github.com/open-io/ansible-role-openio-haproxy
-  version: "19.04"
+  version: "19.10"
   name: haproxy
 ...
