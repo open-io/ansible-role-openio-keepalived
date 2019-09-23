@@ -12,7 +12,7 @@
 - name: 'Install packages'
   package:
     name: "{{ item }}"
-    state: present
+    state: "{{ 'latest' if keepalived_package_upgrade else 'present' }}"
   with_items: "{{ keepalived_packages }}"
   register: install_packages
   until: install_packages is success
