@@ -32,4 +32,5 @@ keepalived_vrrp_instances:
     track_interface:
       - "{{ openio_bind_interface }}"
 keepalived_provision_only: false
+keepalived_package_upgrade: "{{ openio_package_upgrade | d(false) }}"
 ...
