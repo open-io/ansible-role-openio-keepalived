@@ -14,13 +14,13 @@ vrrp_script check_haproxy {
   rise 2
 }
 
-{% for vrrpiname, vrrpiopts in keepalived_vrrp_instances.iteritems() %}
+{% for vrrpiname, vrrpiopts in keepalived_vrrp_instances.items() | list %}
 vrrp_instance {{ vrrpiname }} {
-  {% for key, value in vrrpiopts.iteritems() -%}
+  {% for key, value in vrrpiopts.items() | list -%}
   {{ key }}
     {%- if value is string %} {{ value }}
     {%- elif value is mapping %} {
-      {% for vk,vv in value.iteritems() -%}
+      {% for vk,vv in value.items() | list -%}
   {{ vk }} {{ vv }}
       {% endfor %}
 }
