@@ -20,6 +20,20 @@
   delay: 2
   tags: install
 
+- name: Verify AUTH password
+  assert:
+    that:
+      - password | length <= 8
+      - password is match("^[a-zA-Z0-9]+$")
+    fail_msg: "auth_pass must contains only alphanumeric characters and not exceed 8 characters"
+  with_items: "{{ keepalived_vrrp_instances.values() \
+       | flatten \
+       | selectattr('authentication', 'defined') | map(attribute='authentication') \
+       | selectattr('auth_pass', 'defined') | map(attribute='auth_pass') \
+       | list }}"
+  loop_control:
+    loop_var: password
+
 - name: 'Set configuration'
   template:
     src: "{{ keepalived_conf_template }}"
