@@ -34,6 +34,6 @@ keepalived_vrrp_instances:
       - check_haproxy
     track_interface:
       - "{{ openio_bind_interface }}"
-keepalived_provision_only: false
+keepalived_provision_only: "{{ openio_maintenance_mode | default(false) | bool }}"
 keepalived_package_upgrade: "{{ openio_package_upgrade | d(false) }}"
 ...
