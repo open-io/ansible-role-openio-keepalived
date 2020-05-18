@@ -33,6 +33,7 @@
        | list }}"
   loop_control:
     loop_var: password
+  tags: configure
 
 - name: 'Set configuration'
   template:
